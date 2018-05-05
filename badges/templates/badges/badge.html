@@ -10,7 +10,8 @@
 	</div>
 
 {% endcomment %}
-
+{% load static %}
 <a href="{{ badge.get_absolute_url }}" title="{{ badge.title }} ({{ badge.get_level_display }}): {{ badge.description }}">
+	<img src="/media/{{ badge.icon }}" width="25" height="25">
 	<span class="level_{{ badge.level}} metal">●</span> {{ badge.title }}
 </a>

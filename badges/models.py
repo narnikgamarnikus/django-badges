@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
-from datetime import datetime
-
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 try:
     from django.urls import reverse
@@ -22,9 +21,11 @@ else:
         ("4", "Diamond"),
     )
 
+
 class Badge(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
-    user = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="badges", through='BadgeToUser')
+    user = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="badges", through='BadgeToUser')
     level = models.CharField(max_length=1, choices=LEVEL_CHOICES)
 
     icon = models.ImageField(upload_to='badge_images')
@@ -51,7 +52,7 @@ class Badge(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('badge_detail', kwargs={'slug': self.id})
+        return reverse('badges:badge_detail', kwargs={'slug': self.id})
 
     def award_to(self, user):
         has_badge = self in user.badges.all()
@@ -59,9 +60,11 @@ class Badge(models.Model):
             return False
 
         BadgeToUser.objects.create(badge=self, user=user)
-
-        badge_awarded.send(sender=self.meta_badge, user=user, badge=self)
-
+        badge_awarded.send(
+            sender=self.meta_badge.__class__,
+            user=user,
+            badge=self
+        )
         return BadgeToUser.objects.filter(badge=self, user=user).count()
 
     def number_awarded(self, user_or_qs=None):
@@ -69,7 +72,7 @@ class Badge(models.Model):
         Gives the number awarded total. Pass in an argument to
         get the number per user, or per queryset.
         """
-        kwargs = {'badge':self}
+        kwargs = {'badge': self}
         if user_or_qs is None:
             pass
         elif isinstance(user_or_qs, get_user_model()):
@@ -81,9 +84,12 @@ class Badge(models.Model):
 
 class BadgeToUser(models.Model):
     badge = models.ForeignKey(Badge, on_delete=models.CASCADE)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
 
-    created = models.DateTimeField(default=datetime.now)
+    created = models.DateTimeField(default=timezone.now)
 
 
-from . import listeners
+from . import receivers

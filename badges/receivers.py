@@ -5,7 +5,7 @@ except ImportError:
 
 
 def sync_badges_to_db(**kwargs):
-    from .utils import registered_badges
+    from badges.utils import registered_badges
     for badge in registered_badges.values():
         badge.badge
 

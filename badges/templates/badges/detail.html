@@ -2,10 +2,11 @@
 {% load badges_tags %}
 {% load humanize %}
 
-{% block body %}
+{% block content %}
 <div id="badges_tank">
 	<h1>{% block head_title %}Badge: {{ badge.title }}{% endblock %}</h1>
     <p class="info_blurb">{{ badge.description }}</p>
+   	<img src="/media/{{ badge.icon }}" width="100" height="100">
 	<ul class="users">
 		{% for u in users %}
 			<li><a href='{{ u.get_absolute_url }}'>{{ u.username }}</a></li>
