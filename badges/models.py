@@ -52,7 +52,7 @@ class Badge(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('badges:badge_detail', kwargs={'slug': self.id})
+        return reverse('badge_detail', kwargs={'slug': self.id})
 
     def award_to(self, user):
         has_badge = self in user.badges.all()
